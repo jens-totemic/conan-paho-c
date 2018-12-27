@@ -68,13 +68,30 @@ conan_basic_setup()""")
 
     def package_info(self):
     
-        if not self.options.shared:
-            if self.options.SSL:
-                self.cpp_info.libs = ["paho-mqtt3cs-static", "paho-mqtt3as-static"]
+        if self.options.shared and self:
+            # Python 3.7 reserves async as a keyword so we can't access variable with dot 
+            if getattr(self.options, "async"):
+                if self.options.SSL:
+                    self.cpp_info.libs = ["paho-mqtt3as"]
+                else:
+                    self.cpp_info.libs = ["paho-mqtt3a"]
             else:
-                self.cpp_info.libs = ["paho-mqtt3c-static", "paho-mqtt3a-static"]
+                if self.options.SSL:
+                    self.cpp_info.libs = ["paho-mqtt3cs"]
+                else:
+                    self.cpp_info.libs = ["paho-mqtt3c"]
         else:
-            self.cpp_info.libs = tools.collect_libs(self)
+            if getattr(self.options, "async"):
+                if self.options.SSL:
+                    self.cpp_info.libs = ["paho-mqtt3as-static"]
+                else:
+                    self.cpp_info.libs = ["paho-mqtt3a-static"]
+            else:
+                if self.options.SSL:
+                    self.cpp_info.libs = ["paho-mqtt3cs-static"]
+                else:
+                    self.cpp_info.libs = ["paho-mqtt3c-static"]
+
         if self.settings.os == "Windows":
             if not self.options.shared:
                 self.cpp_info.libs.append("ws2_32")
