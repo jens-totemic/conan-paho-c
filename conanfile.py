@@ -67,7 +67,14 @@ conan_basic_setup()""")
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = tools.collect_libs(self)
+    
+        if not self.options.shared:
+            if self.options.SSL:
+                self.cpp_info.libs = ["paho-mqtt3cs-static", "paho-mqtt3as-static"]
+            else:
+                self.cpp_info.libs = ["paho-mqtt3c-static", "paho-mqtt3a-static"]
+        else:
+            self.cpp_info.libs = tools.collect_libs(self)
         if self.settings.os == "Windows":
             if not self.options.shared:
                 self.cpp_info.libs.append("ws2_32")
