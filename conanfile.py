@@ -19,7 +19,7 @@ of Things (IoT)"""
     default_options = {"shared": False, "fPIC": True, "SSL": False, "async": True}
     generators = "cmake"
     exports = "LICENSE"
-    exports_sources = ["0001-fix-MinGW-and-OSX-builds.patch"]
+    exports_sources = ["0001-fix-MinGW-and-OSX-builds.patch", "0002-fix-capath-support.patch"]
     _source_subfolder = "sources"
 
     def config_options(self):
@@ -34,6 +34,10 @@ of Things (IoT)"""
         os.rename("paho.mqtt.c-%s" % self.version, self._source_subfolder)
         cmakelists_path = "%s/CMakeLists.txt" % self._source_subfolder
         tools.patch(base_path=self._source_subfolder, patch_file="0001-fix-MinGW-and-OSX-builds.patch")
+        # add a patch that fixes capath not working
+        # from https://github.com/eclipse/paho.mqtt.c/pull/574
+        # TODO: remove in paho 1.3.1
+        tools.patch(base_path=self._source_subfolder, patch_file="0002-fix-capath-support.patch")
         tools.replace_in_file(cmakelists_path,
                               "PROJECT(\"Eclipse Paho C\" C)",
                               """PROJECT(\"Eclipse Paho C\" C)
@@ -42,7 +46,7 @@ conan_basic_setup()""")
 
     def requirements(self):
         if self.options.SSL:
-            self.requires("OpenSSL/1.1.0i@conan/stable")
+            self.requires("OpenSSL/1.0.2@conan/stable")
 
     def _configure_cmake(self):
         cmake = CMake(self)
