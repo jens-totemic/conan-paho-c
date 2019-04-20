@@ -79,7 +79,7 @@ of Things (IoT)"""
     
         if self.options.shared and self:
             # Python 3.7 reserves async as a keyword so we can't access variable with dot 
-            if getattr(self.options, "async"):
+            if self.options.asynchronous:
                 if self.options.SSL:
                     self.cpp_info.libs = ["paho-mqtt3as"]
                 else:
@@ -90,7 +90,7 @@ of Things (IoT)"""
                 else:
                     self.cpp_info.libs = ["paho-mqtt3c"]
         else:
-            if getattr(self.options, "async"):
+            if self.options.asynchronous:
                 if self.options.SSL:
                     self.cpp_info.libs = ["paho-mqtt3as-static"]
                 else:
