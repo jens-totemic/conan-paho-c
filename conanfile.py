@@ -18,14 +18,17 @@ of Things (IoT)"""
     options = {"shared": [True, False],
                "fPIC": [True, False],
                "SSL": [True, False],
-               "asynchronous": [True, False]}
+               "asynchronous": [True, False],
+               "qos0Persistence": [True, False]}
     default_options = {"shared": False,
                        "fPIC": True,
                        "SSL": False,
-                       "asynchronous": True}
+                       "asynchronous": True,
+                       # persisting qos0 along with all other types is the default in Paho.
+                       "qos0Persistence": True}
     generators = "cmake"
     exports = "LICENSE"
-    exports_sources = ["CMakeLists.txt", "0001-fix-MinGW-and-OSX-builds.patch", "0002-fix-cmake-install.patch", "0002-fix-capath-support.patch"]
+    exports_sources = ["CMakeLists.txt", "0001-fix-MinGW-and-OSX-builds.patch", "0002-fix-cmake-install.patch", "0003-fix-capath-support.patch", "0004-fix-command-restore-588.patch", "0005-stop-qos0-persistence-650.patch"]
 
     @property
     def _source_subfolder(self):
@@ -64,7 +67,17 @@ of Things (IoT)"""
         # add a patch that fixes capath not working
         # from https://github.com/eclipse/paho.mqtt.c/pull/574
         # TODO: remove in paho 1.3.1
-        tools.patch(base_path=self._source_subfolder, patch_file="0002-fix-capath-support.patch")        
+        tools.patch(base_path=self._source_subfolder, patch_file="0003-fix-capath-support.patch")
+        # add a patch that fixes persisted commands not correctly restored
+        # from https://github.com/eclipse/paho.mqtt.c/issues/588
+        # https://github.com/eclipse/paho.mqtt.c/commit/73746c0d717753c158eac79b59d367c6d72ae0e0
+        # TODO: remove in paho 1.3.1
+        tools.patch(base_path=self._source_subfolder, patch_file="0004-fix-command-restore-588.patch")
+        # add a patch that allows disabling persistence of QoS0 messages
+        # https://github.com/eclipse/paho.mqtt.c/issues/650
+        # TODO: remove if a fix is merged
+        if not self.options.qos0Persistence:
+            tools.patch(base_path=self._source_subfolder, patch_file="0005-stop-qos0-persistence-650.patch")
         cmake = self._configure_cmake()
         cmake.build()
 

@@ -1,0 +1,13 @@
+diff --git a/src/MQTTAsync.c b/src/MQTTAsync.c
+index a5813b4..5bafe34 100644
+--- a/src/MQTTAsync.c
++++ b/src/MQTTAsync.c
+@@ -1021,7 +1021,7 @@ static int MQTTAsync_addCommand(MQTTAsync_queuedCommand* command, int command_si
+ 	{
+ 		ListAppend(commands, command, command_size);
+ #if !defined(NO_PERSISTENCE)
+-		if (command->client->c->persistence)
++        if (command->client->c->persistence && (command->command.type != PUBLISH || command->command.details.pub.qos > 0))
+ 			MQTTAsync_persistCommand(command);
+ #endif
+ 	}
