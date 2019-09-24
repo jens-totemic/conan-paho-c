@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index b53745b..d8787d8 100644
+index 9817ff1..52372d8 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -37,7 +37,7 @@ STRING(TIMESTAMP BUILD_TIMESTAMP UTC)
@@ -60,7 +60,7 @@ index b46eaca..399b37d 100644
      IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
          SET(LIBS_SYSTEM c dl pthread)
 diff --git a/src/MQTTAsync.c b/src/MQTTAsync.c
-index a5813b4..4f209ec 100644
+index b750f9f..b866250 100644
 --- a/src/MQTTAsync.c
 +++ b/src/MQTTAsync.c
 @@ -205,6 +205,14 @@ START_TIME_TYPE MQTTAsync_start_clock(void)
@@ -78,7 +78,7 @@ index a5813b4..4f209ec 100644
  #else
  #define START_TIME_TYPE struct timeval
  START_TIME_TYPE MQTTAsync_start_clock(void)
-@@ -235,6 +243,16 @@ long MQTTAsync_elapsed(struct timespec start)
+@@ -255,6 +263,16 @@ long MQTTAsync_elapsed(struct timespec start)
  	ntimersub(now, start, res);
  	return (res.tv_sec)*1000L + (res.tv_nsec)/1000000L;
  }
@@ -96,7 +96,7 @@ index a5813b4..4f209ec 100644
  long MQTTAsync_elapsed(struct timeval start)
  {
 diff --git a/src/MQTTClient.c b/src/MQTTClient.c
-index 2069ff9..faee1ae 100644
+index 2de27a0..4397f7a 100644
 --- a/src/MQTTClient.c
 +++ b/src/MQTTClient.c
 @@ -258,6 +258,14 @@ START_TIME_TYPE MQTTClient_start_clock(void)
@@ -131,10 +131,10 @@ index 2069ff9..faee1ae 100644
  long MQTTClient_elapsed(struct timeval start)
  {
 diff --git a/src/Thread.c b/src/Thread.c
-index 4cb2f16..40ce8dc 100644
+index 4536c0a..89d99ff 100644
 --- a/src/Thread.c
 +++ b/src/Thread.c
-@@ -409,9 +409,16 @@ int Thread_wait_cond(cond_type condvar, int timeout)
+@@ -411,9 +411,16 @@ int Thread_wait_cond(cond_type condvar, int timeout)
  	struct timespec cond_timeout;
  
  	FUNC_ENTRY;
@@ -152,11 +152,11 @@ index 4cb2f16..40ce8dc 100644
  	rc = pthread_cond_timedwait(&condvar->cond, &condvar->mutex, &cond_timeout);
  	pthread_mutex_unlock(&condvar->mutex);
 diff --git a/src/WebSocket.c b/src/WebSocket.c
-index 47b1dad..3f96dac 100644
+index e3e15b3..33349a2 100644
 --- a/src/WebSocket.c
 +++ b/src/WebSocket.c
-@@ -28,6 +28,11 @@
- #include "MQTTProtocolOut.h"
+@@ -29,6 +29,11 @@
+ #include "SocketBuffer.h"
  #include "StackTrace.h"
  
 +#ifdef __MINGW32__
